@@ -17,7 +17,7 @@ services:
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     ports:
-      - "9864"
+      - "9864:9864"
     env_file:
       - ./hadoop.env
   
@@ -34,6 +34,8 @@ services:
   nodemanager:
     image: coomia/hadoop3.2-nodemanager:0.1
     container_name: nodemanager
+    ports:
+      - 8042:8042
     environment:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
     env_file:
@@ -42,6 +44,8 @@ services:
   historyserver:
     image: coomia/hadoop3.2-historyserver:0.1
     container_name: historyserver
+    ports:
+      - 8188:8188
     environment:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
     env_file:
@@ -51,7 +55,7 @@ services:
     image: coomia/hive3.1-hadoop3.2:0.1
     container_name: hive-metastore
     volumes:
-      - /data/tools:/tools
+      - ./data/tools:/tools
     env_file:
       - ./hadoop.env
     command: /opt/hive/bin/hive --service metastore
@@ -99,7 +103,7 @@ services:
       - "9999:8080"
     volumes:
       - ./conf/standalone:/opt/presto/etc:ro
-      - /data/presto:/data
+      - ./data/presto:/data
     restart: unless-stopped
     
   elasticsearch:
@@ -186,6 +190,7 @@ services:
     container_name: hbase-regionserver
     command: regionserver
     ports:
+      - 16020:16020
       - 16030:16030
       - 16201:16201
       - 16301:16301
