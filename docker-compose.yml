@@ -1,7 +1,7 @@
 version: "3"
 services:
   namenode:
-    image: coomia/hadoop3.2-namenode:0.1
+    image: coomia/hadoop3.2-namenode:1.0
     container_name: namenode
     ports:
       - 9870:9870
@@ -12,7 +12,7 @@ services:
       - ./hadoop.env
 
   datanode:
-    image: coomia/hadoop3.2-datanode:0.1
+    image: coomia/hadoop3.2-datanode:1.0
     container_name: datanode
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
@@ -22,7 +22,7 @@ services:
       - ./hadoop.env
   
   resourcemanager:
-    image: coomia/hadoop3.2-resourcemanager:0.1
+    image: coomia/hadoop3.2-resourcemanager:1.0
     container_name: resourcemanager
     ports:
       - 8088:8088
@@ -32,7 +32,7 @@ services:
       - ./hadoop.env
 
   nodemanager:
-    image: coomia/hadoop3.2-nodemanager:0.1
+    image: coomia/hadoop3.2-nodemanager:1.0
     container_name: nodemanager
     ports:
       - 8042:8042
@@ -42,7 +42,7 @@ services:
       - ./hadoop.env
   
   historyserver:
-    image: coomia/hadoop3.2-historyserver:0.1
+    image: coomia/hadoop3.2-historyserver:1.0
     container_name: historyserver
     ports:
       - 8188:8188
@@ -52,7 +52,7 @@ services:
       - ./hadoop.env
 
   hive-metastore:
-    image: coomia/hive3.1-hadoop3.2:0.1
+    image: coomia/hive3:1.0
     container_name: hive-metastore
     volumes:
       - ./data/tools:/tools
@@ -64,10 +64,10 @@ services:
     ports:
       - "9083:9083"
   hive-metastore-pg:
-    image: coomia/hive3.1-metastore-pg:0.1
+    image: coomia/hive-metastore-pg:1.0
     container_name: hive-metastore-pg
   hive-server:
-    image: coomia/hive3.1-hadoop3.2:0.1
+    image: coomia/hive3:1.0
     container_name: hive-server
     env_file:
       - ./hadoop.env
@@ -105,53 +105,9 @@ services:
       - ./conf/standalone:/opt/presto/etc:ro
       - ./data/presto:/data
     restart: unless-stopped
-    
-  elasticsearch:
-    image: elasticsearch:7.9.1
-    container_name: elasticsearch
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - action.destructive_requires_name=true
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-  kibana:
-    image: kibana:7.9.1
-    container_name: kibana
-    ports:
-      - "5601:5601"
-    environment:
-      I18N_LOCALE: zh-CN
-    restart: always
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-      
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:7.9.1
-    hostname: filebeat
-    container_name: filebeat
-    volumes:
-      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - ./elk/filebeat/logs:/usr/share/filebeat/logs
-    environment:
-      - TZ=Asia/Shanghai
  
   jobmanager:
-    image: coomia/flink1.11.3-yarn-embedded:0.1
+    image: coomia/flink:1.14
     container_name: jobmanager
     expose:
       - "6123"
@@ -162,7 +118,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
 
   taskmanager:
-    image: coomia/flink1.11.3-yarn-embedded:0.1
+    image: coomia/flink:1.14
     container_name: taskmanager
     expose:
       - "6121"
@@ -215,3 +171,98 @@ services:
       - 8085:8085
     depends_on:
       - zookeeper
+
+  alluxio-master:
+    image: coomia/alluxio:2.7.1
+    container_name: alluxio-master
+    volumes:
+      - alluxio-journal:/opt/alluxio/journal
+      - alluxio-ufs:/opt/alluxio/underFSStorage/
+    user: root
+    entrypoint: [ bash, -xeuc ]
+    environment:
+      - ALLUXIO_JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=45.0
+    command:
+      - |
+        JOURNAL_FOLDER=$$(alluxio getConf alluxio.master.journal.folder)
+        if [ ! -d "$$JOURNAL_FOLDER" ]; then
+          alluxio formatJournal
+        fi
+        exec /entrypoint.sh master --no-format
+    ports:
+      - 19999:19999
+
+  alluxio-worker:
+    image: coomia/alluxio:2.7.1
+    container_name: alluxio-worker
+    volumes:
+      - alluxio-ufs:/opt/alluxio/underFSStorage/
+      - alluxio-worker-data:/alluxio-worker-data
+    user: root
+    command: worker --no-format
+    environment:
+      - ALLUXIO_JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=45.0
+      - ALLUXIO_WORKER_TIEREDSTORE_LEVEL0_DIRS_PATH=/alluxio-worker-data
+    depends_on:
+      - alluxio-master
+
+  alluxio-proxy:
+    image: coomia/alluxio:2.7.1
+    container_name: alluxio-proxy
+    user: root
+    command: proxy
+    environment:
+      - ALLUXIO_JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+    ports:
+      - 39999:39999
+    depends_on:
+      - alluxio-master
+
+  elasticsearch:
+    image: elasticsearch:7.9.1
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - action.destructive_requires_name=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+  kibana:
+    image: kibana:7.9.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      I18N_LOCALE: zh-CN
+    restart: always
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+      
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.9.1
+    hostname: filebeat
+    container_name: filebeat
+    volumes:
+      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./elk/filebeat/logs:/usr/share/filebeat/logs
+    environment:
+      - TZ=Asia/Shanghai
+      
+volumes:
+  alluxio-worker-data:
+  alluxio-ufs:
+  alluxio-journal:
