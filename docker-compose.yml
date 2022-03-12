@@ -263,7 +263,7 @@ services:
       - TZ=Asia/Shanghai
 
   geomesa:
-    image: lawlite/geomesa-hbase_2.12-3.3.0:0.1
+    image: lawlite19/geomesa-hbase_2.12-3.3.0:0.1
     hostname: geomesa
     container_name: geomesa
     depends_on:
