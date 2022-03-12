@@ -261,7 +261,17 @@ services:
       - ./elk/filebeat/logs:/usr/share/filebeat/logs
     environment:
       - TZ=Asia/Shanghai
-      
+
+  geomesa:
+    image: lawlite/geomesa-hbase_2.12-3.3.0:0.1
+    hostname: geomesa
+    container_name: geomesa
+    depends_on:
+      - datanode
+      - namenode
+      - hbase-master
+      - hbase-regionserver
+
 volumes:
   alluxio-worker-data:
   alluxio-ufs:
