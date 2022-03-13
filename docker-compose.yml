@@ -271,14 +271,13 @@ services:
       - namenode
       - hbase-master
       - hbase-regionserver
+
   geoserver:
     image: lawlite19/geoserver_2.17.3:0.1
     hostname: geoserver
     container_name: geoserver
     volumes:
-      - /var/geoserver/datadir
-      - /usr/local/tomcat/webapps/geoserver/WEB-INF/lib
-      - /usr/local/tomcat/webapps/geoserver/WEB-INF/classes
+      - ./data:/var/geoserver/datadir
     environment:
       - JAVA_OPTS=-Xms128m -Xmx256m
     ports:
