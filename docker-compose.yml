@@ -272,7 +272,7 @@ services:
       - hbase-master
       - hbase-regionserver
   geoserver:
-    image: lawlite19/geoserver:2.17.3
+    image: lawlite19/geoserver_2.17.3:0.1
     hostname: geoserver
     container_name: geoserver
     volumes:
