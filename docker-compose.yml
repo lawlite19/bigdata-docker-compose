@@ -6,6 +6,8 @@ services:
     ports:
       - 9870:9870
       - 9000:9000
+    volumes:
+      - /opt/data/bigdata/datanode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=coomia-hdp-cluster
     env_file:
@@ -18,6 +20,8 @@ services:
       SERVICE_PRECONDITION: "namenode:9870"
     ports:
       - "9864:9864"
+    volumes:
+      - /opt/data/bigdata/datanode:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
   
