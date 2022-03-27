@@ -1,0 +1,1 @@
+docker-compose up -d datanode namenode hbase-master hbase-regionserver geomesa
