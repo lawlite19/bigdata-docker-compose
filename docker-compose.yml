@@ -136,7 +136,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
       
   hbase-master:
-    image: coomia/hbase2.2:0.1
+    image: lawlite19/hbase2.2:0.1
     container_name: hbase-master
     command: master
     ports:
@@ -146,7 +146,7 @@ services:
       - zookeeper
       
   hbase-regionserver:
-    image: coomia/hbase2.2:0.1
+    image: lawlite19/hbase2.2:0.1
     container_name: hbase-regionserver
     command: regionserver
     ports:
