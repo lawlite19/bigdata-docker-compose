@@ -7,7 +7,7 @@ services:
       - 9870:9870
       - 9000:9000
     volumes:
-      - /opt/data/bigdata/datanode:/hadoop/dfs/name
+      - /opt/data/bigdata/namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=coomia-hdp-cluster
     env_file:
