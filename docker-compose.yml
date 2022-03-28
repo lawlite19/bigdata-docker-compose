@@ -293,6 +293,8 @@ services:
       - hbase-regionserver
   spark:
     image: docker.io/bitnami/spark:3
+    hostname: spark
+    container_name: spark
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -303,6 +305,8 @@ services:
       - '8082:8080'
   spark-worker:
     image: docker.io/bitnami/spark:3
+    hostname: spark-worker
+    container_name: spark-worker
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
