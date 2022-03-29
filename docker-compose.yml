@@ -295,6 +295,8 @@ services:
     image: docker.io/bitnami/spark:3
     hostname: spark
     container_name: spark
+    volumes:
+      - /opt/data/bigdata/spark/conf:/opt/bitnami/spark/conf
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
