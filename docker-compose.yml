@@ -296,7 +296,7 @@ services:
     hostname: spark
     container_name: spark
     volumes:
-      - ./data/bigdata/spark/conf:/opt/bitnami/spark/conf
+      - /opt/data/bigdata/spark/conf:/opt/bitnami/spark/conf
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
