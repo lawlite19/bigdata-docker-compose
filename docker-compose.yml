@@ -296,6 +296,7 @@ services:
     hostname: spark
     container_name: spark
     volumes:
+      # 注意挂载的目录，spark-default.conf等配置文件
       - /opt/data/bigdata/spark/conf:/opt/bitnami/spark/conf
     environment:
       - SPARK_MODE=master
