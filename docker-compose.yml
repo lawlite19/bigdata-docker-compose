@@ -298,6 +298,7 @@ services:
     volumes:
       # 注意挂载的目录，spark-default.conf等配置文件·
       - /opt/data/bigdata/spark/conf:/opt/bitnami/spark/conf
+      - /opt/data/code:/opt/bitnami/spark/demo
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
