@@ -318,9 +318,6 @@ services:
     depends_on:
       - datanode
       - namenode
-      - hbase-master
-      - hbase-regionserver
-      - geomesa
   spark-worker:
     image: docker.io/bitnami/spark:3
     hostname: spark-worker
