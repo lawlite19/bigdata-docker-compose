@@ -143,6 +143,8 @@ services:
       - 16000:16000
       - 16010:16010
     depends_on:
+      - datanode
+      - namenode
       - zookeeper
       
   hbase-regionserver:
