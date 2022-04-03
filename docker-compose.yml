@@ -315,16 +315,12 @@ services:
     ports:
       - '8082:8080'
       - '18080:18080'
-    extra_hosts:
-      - zookeeper:127.0.0.1
-      - datanode:127.0.0.1
-      - namenode:127.0.0.1
-      - hbase-master:127.0.0.1
-      - hbase-regionserver:127.0.0.1    
-      - hbase-regionserver.bigdata-docker-compose_default:127.0.0.1
     depends_on:
       - datanode
       - namenode
+      - hbase-master
+      - hbase-regionserver
+      - geomesa
   spark-worker:
     image: docker.io/bitnami/spark:3
     hostname: spark-worker
