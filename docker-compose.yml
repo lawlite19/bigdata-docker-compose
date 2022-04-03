@@ -146,6 +146,10 @@ services:
       - datanode
       - namenode
       - zookeeper
+    links:
+      - datanode
+      - namenode
+      - zookeeper
       
   hbase-regionserver:
     image: lawlite19/geomesa-hbase2.2:0.1
@@ -159,6 +163,9 @@ services:
     depends_on:
       - zookeeper
       - hbase-master
+    links:
+      - hbase-master
+      - zookeeper
   hbase-thrift:
     image: coomia/hbase2.2:0.1
     container_name: hbase-thrift
