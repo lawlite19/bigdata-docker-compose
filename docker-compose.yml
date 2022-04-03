@@ -316,7 +316,7 @@ services:
       - '8082:8080'
       - '18080:18080'
     extra_hosts:
-      - "127.0.0.1:zookeeper"
+      - zookeeper:127.0.0.1
     depends_on:
       - datanode
       - namenode
