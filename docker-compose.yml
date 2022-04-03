@@ -281,7 +281,7 @@ services:
     hostname: geoserver
     container_name: geoserver
     volumes:
-      - ./data:/var/geoserver/datadir
+      - /opt/data/bigdata/geoserver/datadir:/var/geoserver/datadir
     environment:
       - JAVA_OPTS=-Xms128m -Xmx256m
     ports:
